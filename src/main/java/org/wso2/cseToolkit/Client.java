@@ -37,7 +37,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class Client {
@@ -101,20 +100,20 @@ public class Client {
                         + namesOfFilesInDir1.get(namesOfFilesInDir1.size() - count).actualName);
                 count++;
             }
-            if (count < 80) {
+            if (count <= 80) {
                 if (dirNames.size() > 1) {
                     String dir2Path = fileDirectory + File.separator + dirNames.get(dirNames.size() - 2);
                     List<FileNames> namesOfFilesInDir2 = readDirectory(dir2Path);
                     orderFiles(namesOfFilesInDir2);
                     int i = 1;
-                    while (count <= 80 && count <= namesOfFilesInDir2.size()) {
+                    while (count <= 80 && count <= namesOfFilesInDir2.size()+namesOfFilesInDir1.size()) {
                         writeFileContent(dir2Path + File.separator
                                 + namesOfFilesInDir2.get(namesOfFilesInDir2.size() - i).actualName);
                         count++;
                         i++;
                     }
                 } else {
-                    log.info("Only " + count + " files provided for data processing");
+                    log.info("Only " + (count-1) + " files provided for data processing");
                 }
             }
             orderTrades(tradesArrayList);
@@ -309,7 +308,7 @@ public class Client {
 
     private static void sendData(DataPublisher dataPublisher) throws InterruptedException {
         String streamId = "LastDay:1.0.0";
-        System.out.println("Storing last date (" + lastDate + ") in temporary table");
+        /*System.out.println("Storing last date (" + lastDate + ") in temporary table");
         Event event1 = new Event(streamId, System.currentTimeMillis(), null, null, new Object[] { lastDate });
         dataPublisher.publish(event1);
 
@@ -322,35 +321,42 @@ public class Client {
             dataPublisher.publish(event);
         }
         System.out.println("Finished sending announcements");
-        Thread.sleep(10000);
-        System.out.println(System.currentTimeMillis());
-        if (count > 20) {
+        Thread.sleep(10000);*/
+        Date timeSendingOld=new Date(System.currentTimeMillis());
+        System.out.println("started sending old data :"+timeSendingOld);
+        if (count-1 > 20) {
             streamId = "TradesDuringPastFewMonths:1.0.0";
             System.out.println("Started sending older trading information");
             int itemLocation = 0;
             int countDays = 0;
-            String prevDate = null;
-            do {
-                Trades temp = tradesArrayList.get(itemLocation);
+            String prevDate = "nullDay";
+
+            for (Trades temp:tradesArrayList) {
+                if (!prevDate.equals(temp.tradeDate)){
+                    ++countDays;
+                    prevDate=temp.tradeDate;
+                    if (countDays > (count-1)-20){
+                        break;
+                    }
+                }
                 Event event = new Event(streamId, System.currentTimeMillis(), null, null,
                         new Object[] { temp.tradeDate, temp.tranRefNo, temp.tranNo, temp.security, temp.qty, temp.price,
                                 temp.tranTime, temp.buyClient, temp.buyBroker, temp.sellClient, temp.sellBroker,
                                 temp.timeInMilliseconds });
 
                 dataPublisher.publish(event);
-                itemLocation++;
-                if (!Objects.equals(prevDate, temp.tradeDate)) {
-                    countDays++;
-                    prevDate = temp.tradeDate;
-                }
-            } while (countDays <= count - 20);
+                ++itemLocation;
+            }
+            //System.out.println(countDays);
+            //System.out.println(prevDate);
             System.out.println("Finished sending older trading information");
-            Thread.sleep(180000);
+            timeSendingOld=new Date(System.currentTimeMillis());
+            System.out.println("finished sending old data :"+timeSendingOld);
+            /*Thread.sleep(180000);
 
             streamId = "TradesDuringThisMonth:1.0.0";
             System.out.println("Started sending trading data for this month");
-            //for (int i = itemLocation; i < tradesArrayList.size(); i++) {
-            for (int i = itemLocation; i < 100000; i++) {
+            for (int i = itemLocation; i < tradesArrayList.size(); i++) {
                 Trades temp = tradesArrayList.get(i);
                 Event event = new Event(streamId, System.currentTimeMillis(), null, null,
                         new Object[] { temp.tradeDate, temp.tranRefNo, temp.tranNo, temp.security, temp.qty, temp.price,
@@ -388,10 +394,10 @@ public class Client {
         }
         System.out.println("Finished sending trading data for " + lastDate);
         Thread.sleep(100);
-        System.out.println(closingPricesArrayList.size());
+        *//*System.out.println(closingPricesArrayList.size());
         System.out.println(eighthOldestDate);
         System.out.println(closingPricesArrayList.get(0).date);
-        System.out.println(eighthOldestDate.equalsIgnoreCase(closingPricesArrayList.get(0).date));
+        System.out.println(eighthOldestDate.equalsIgnoreCase(closingPricesArrayList.get(0).date));*//*
         //Finding perfect trader
         if (closingPricesArrayList.size()>0 && eighthOldestDate!= null && eighthOldestDate.equalsIgnoreCase(closingPricesArrayList.get(0).date)) {
             System.out.println("Started sending closing price data for last 7 trading days");
@@ -449,7 +455,7 @@ public class Client {
             Event eventC = new Event(streamId, System.currentTimeMillis(), null, null,
                     new Object[] {true});
             dataPublisher.publish(eventC);
-            Thread.sleep(100);
+            Thread.sleep(100);*/
         }
 
     }
@@ -550,7 +556,7 @@ public class Client {
 
     private static class Announcements {
         Announcements(String annID, String symbol, String shortDesc, String annTime, String annType,
-                long timeInMilliseconds) {
+                      long timeInMilliseconds) {
             this.annID = annID;
             this.symbol = symbol;
             this.shortDesc = shortDesc;
