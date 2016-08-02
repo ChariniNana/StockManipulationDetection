@@ -22,11 +22,8 @@ import java.io.File;
 
 public class DataPublisherUtil {
 
-    static File securityFile = new File("src" + File.separator + "main" + File.separator + "resources"
-            + File.separator);
-    static String dataAgentConfigPath = "src" + File.separator + "main" + File.separator + "resources"
-            + File.separator
-            + "data-agent-config.xml";
+    static File securityFile = new File("");
+    static String dataAgentConfigPath = "data-agent-config.xml";
 
     public static void setTrustStoreParams() {
         String trustStore = securityFile.getAbsolutePath();
