@@ -21,6 +21,7 @@ package org.wso2.cseToolkit;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.BasicConfigurator;
 import org.wso2.carbon.databridge.agent.AgentHolder;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.commons.Event;
@@ -55,7 +56,9 @@ public class Client {
     private static String eighthOldestDate;
     private static int count = 1; // TODO: 8/2/16 make this 0. recheck
 
+    
     public static void main(String[] args) {
+    	BasicConfigurator.configure(); 
         log.info(Arrays.deepToString(args));
         try {
             AgentHolder.setConfigPath(DataPublisherUtil.getDataAgentConfigPath());
@@ -66,15 +69,15 @@ public class Client {
     		String path = FilenameUtils.getFullPathNoEndSeparator(file.getAbsolutePath());
             
             File common = new File(path + File.separator + "TradeFiles");
-            fileHandler(common.getCanonicalPath());
+            fileHandler(common.getPath());
             common = new File(path + File.separator + "Announcements"+ File.separator +"Announcements.csv");
-            announcementFileReader(common.getCanonicalPath());
+            announcementFileReader(common.getPath());
             common = new File(path + File.separator + "ClosingPrices");
-            closingPriceReader(common.getCanonicalPath());
+            closingPriceReader(common.getPath());
             sendData(dataPublisher);
 
-        } catch (Throwable e) {
-            log.error(e);
+        } catch (Exception e) {
+            log.error(e.getMessage());
         }
     }
 
@@ -243,6 +246,7 @@ public class Client {
         BufferedReader brTrades = new BufferedReader(new FileReader(filePath));
         brTrades.readLine(); // first 2 lines contain unnecessary data
         brTrades.readLine();
+        log.debug(filePath);
         while ((line = brTrades.readLine()) != null) {
             List<String> dataRow = Arrays.asList(line.split("\\s+"));
             if (dataRow.size()==24) {
