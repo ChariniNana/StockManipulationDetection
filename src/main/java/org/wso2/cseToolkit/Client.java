@@ -18,6 +18,7 @@
 
 package org.wso2.cseToolkit;
 
+import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.wso2.carbon.databridge.agent.AgentHolder;
@@ -61,15 +62,17 @@ public class Client {
             AgentHolder.setConfigPath(DataPublisherUtil.getDataAgentConfigPath());
             DataPublisherUtil.setTrustStoreParams();
             DataPublisher dataPublisher = new DataPublisher("tcp://localhost:7611", "admin", "admin");
-            File common = new File("../TradeFiles");
+            
+            File file = new File("");		
+    		String path = FilenameUtils.getFullPathNoEndSeparator(file.getAbsolutePath());
+            
+            File common = new File(path + File.separator + "TradeFiles");
             fileHandler(common.getCanonicalPath());
-            common = new File("../Announcements/Announcements.csv");
+            common = new File(path + File.separator + "Announcements"+ File.separator +"Announcements.csv");
             announcementFileReader(common.getCanonicalPath());
-            common = new File("../ClosingPrices");
+            common = new File(path + File.separator + "ClosingPrices");
             closingPriceReader(common.getCanonicalPath());
             sendData(dataPublisher);
-
-
 
         } catch (Throwable e) {
             log.error(e);
