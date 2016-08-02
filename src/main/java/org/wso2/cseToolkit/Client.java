@@ -553,7 +553,7 @@ public class Client {
 
     private static class Announcements {
         Announcements(String annID, String symbol, String shortDesc, String annTime, String annType,
-                long timeInMilliseconds) {
+                      long timeInMilliseconds) {
             this.annID = annID;
             this.symbol = symbol;
             this.shortDesc = shortDesc;
