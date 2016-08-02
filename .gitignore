@@ -1,2 +1,10 @@
 /target
+/.settings
+/.project
+/bin
+/.classpath
+*.sublime*
+/.externalToolBuilders
+/out
 /.idea
+StockManipulationDetection.iml
