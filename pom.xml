@@ -76,11 +76,6 @@
 
 	<dependencies>
 		<dependency>
-			<groupId>commons-logging</groupId>
-			<artifactId>commons-logging</artifactId>
-			<version>1.2</version>
-		</dependency>
-		<dependency>
 			<groupId>org.wso2.carbon.analytics-common</groupId>
 			<artifactId>org.wso2.carbon.databridge.agent</artifactId>
 			<version>5.0.12-SNAPSHOT</version>
