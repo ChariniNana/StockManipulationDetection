@@ -33,14 +33,15 @@ import java.util.List;
 import java.util.Locale;
 
 import org.apache.commons.io.FilenameUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.log4j.BasicConfigurator;
 import org.wso2.carbon.databridge.agent.AgentHolder;
 import org.wso2.carbon.databridge.agent.DataPublisher;
 import org.wso2.carbon.databridge.commons.Event;
 
 public class Client {
-    private static Logger log = LoggerFactory.getLogger(Client.class);
+    private static Log log = LogFactory.getLog(Client.class);
     private static final SimpleDateFormat sdf = new SimpleDateFormat("dd-MMM-yy hh:mm:ss a", Locale.ENGLISH);
     private static final SimpleDateFormat sdfDate = new SimpleDateFormat("dd-MMM-yy", Locale.ENGLISH);
     private static Date date;
@@ -56,7 +57,8 @@ public class Client {
     private static int count = 1; // TODO: 8/2/16 make this 0. recheck
 
     
-    public static void main(String[] args) {    	
+    public static void main(String[] args) {
+    	BasicConfigurator.configure(); 
         log.info(Arrays.deepToString(args));
         try {
             AgentHolder.setConfigPath(DataPublisherUtil.getDataAgentConfigPath());
